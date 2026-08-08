@@ -1,3 +1,7 @@
 """NYC Yellow Taxi end-to-end analysis package."""
 
-__all__: list[str] = []
+from .data_loader import DataLoader
+
+__all__ = [
+    "DataLoader",
+]
