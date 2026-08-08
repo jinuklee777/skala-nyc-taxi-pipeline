@@ -1,0 +1,84 @@
+{
+  "rules": {
+    "filter_target_month": true,
+    "filter_invalid_amounts": true,
+    "fare_cap": 500.0,
+    "total_cap": 500.0,
+    "distance_cap": 100.0,
+    "duration_cap_minutes": 240.0,
+    "speed_cap_mph": 80.0,
+    "passenger_min": 1,
+    "passenger_max": 6,
+    "filter_location_ids": false
+  },
+  "imputation": {
+    "passenger_count": {
+      "strategy": "median",
+      "value": 1
+    },
+    "RatecodeID": {
+      "strategy": "unknown",
+      "value": 99
+    },
+    "store_and_fwd_flag": {
+      "strategy": "unknown",
+      "value": "Unknown"
+    },
+    "congestion_surcharge": {
+      "strategy": "zero",
+      "value": 0.0
+    },
+    "Airport_fee": {
+      "strategy": "zero",
+      "value": 0.0
+    }
+  },
+  "statistical_evidence": {
+    "distance_fare_pearson": 0.01035559584150798,
+    "distance_fare_p_value": 3.63449808781188e-06,
+    "distance_fare_spearman": 0.7970532637842017,
+    "pandas_distance_fare_correlation": 0.007824,
+    "correlation_outlier_distortion": true,
+    "weekend_ttest_p_value": 3.797329119512486e-79,
+    "weekend_difference": -2.0320704567779693,
+    "weekend_difference_significant": true
+  },
+  "decisions": [
+    {
+      "stage": "결측치",
+      "observation": "passenger_count 결측 23.3539%, Pandas 중앙값 1",
+      "action": "중앙값 1 대체",
+      "reason": "삭제 시 표본 손실이 크고 중앙값이 이상치에 강건하다."
+    },
+    {
+      "stage": "결측치",
+      "observation": "RatecodeID/store_and_fwd_flag 결측률 23.3539%; 5개 컬럼 동시 결측 955,371건, payment_type=0과 완전 일치=예",
+      "action": "명시적 Unknown 범주 대체",
+      "reason": "5%를 넘고 payment_type=0과 일치하는 구조적 결측을 최빈값으로 숨기지 않는다."
+    },
+    {
+      "stage": "결측치",
+      "observation": "congestion_surcharge/Airport_fee 결측률 23.3539%; 위 구조적 결측 패턴과 동일",
+      "action": "가산 요금 결측을 0으로 대체",
+      "reason": "payment_type=0에서 다섯 컬럼이 함께 기록되지 않은 구조이므로 행을 삭제하지 않고, 금액 가산 여부에는 중립적인 0을 사용한다."
+    },
+    {
+      "stage": "금액 이상치",
+      "observation": "fare p99=$81.98, max=$5525.99; total p99=$106.31, max=$5530.74",
+      "action": "fare/total $500 상한 및 음수 제거",
+      "reason": "최대값이 p99의 10배를 넘어 입력 오류로 판단했다."
+    },
+    {
+      "stage": "거리·시간 이상치",
+      "observation": "거리 p99=19.40, max=307491.47; 시간 p99=79.62, max=9960.15",
+      "action": "거리 100mile·시간 240분·속도 80mph 상한",
+      "reason": "최댓값이 p99에서 크게 벗어났으며, IQR 단독 적용으로 정상 공항 운행을 제거하지 않도록 보수적인 택시 도메인 상한을 사용했다."
+    },
+    {
+      "stage": "Feature Engineering",
+      "observation": "Pandas 거리-운임 r=0.0078, 원본 Pearson=0.0104, Spearman=0.7971, 주말 t-test p=3.797e-79",
+      "action": "운행시간·속도·시간대·주말 여부 Feature 생성",
+      "reason": "원본 극단값이 Pearson 상관을 왜곡해도 순위 상관이 관계를 지지하며, 유의한 주중·주말 차이를 모델과 시각화에 반영한다."
+    }
+  ]
+}

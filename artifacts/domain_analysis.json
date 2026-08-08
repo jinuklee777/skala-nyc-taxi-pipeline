@@ -1,0 +1,252 @@
+{
+  "weekend_gap": {
+    "weekday": {
+      "is_weekend": 0,
+      "trips": 2662675,
+      "mean_total": 31.134317909620965,
+      "mean_distance": 3.4884154468720365,
+      "median_cost_per_mile": 12.558823529411766,
+      "mean_duration": 19.53704405657218,
+      "mean_speed": 9.954137206238318,
+      "airport_share": 0.0708685814077948,
+      "mean_tip_pct": 17.901343838273117
+    },
+    "weekend": {
+      "is_weekend": 1,
+      "trips": 1236841,
+      "mean_total": 29.287695686025934,
+      "mean_distance": 3.5774935743559606,
+      "median_cost_per_mile": 10.907051282051283,
+      "mean_duration": 17.301305826698822,
+      "mean_speed": 11.359815400474362,
+      "airport_share": 0.06590176101859495,
+      "mean_tip_pct": 15.50548868749318
+    },
+    "total_gap": -1.8466222235950305,
+    "distance_gap": 0.08907812748392407,
+    "distance_gap_pct": 2.553541252197983,
+    "airport_share_gap_pct": -0.49668203891998497
+  },
+  "distance_bands": [
+    {
+      "distance_band": "short",
+      "trips": 1992429,
+      "median_distance": 1.11,
+      "median_total": 17.95,
+      "median_cost_per_mile": 16.52941176470588,
+      "mean_tip_pct": 21.341478830905768
+    },
+    {
+      "distance_band": "medium",
+      "trips": 1138644,
+      "median_distance": 2.88,
+      "median_total": 28.35,
+      "median_cost_per_mile": 9.70703125,
+      "mean_tip_pct": 13.846238657953599
+    },
+    {
+      "distance_band": "long",
+      "trips": 614818,
+      "median_distance": 7.8,
+      "median_total": 46.85,
+      "median_cost_per_mile": 6.296874999999999,
+      "mean_tip_pct": 10.374593030464796
+    },
+    {
+      "distance_band": "very_long",
+      "trips": 153625,
+      "median_distance": 17.82,
+      "median_total": 95.44,
+      "median_cost_per_mile": 5.15770423991727,
+      "mean_tip_pct": 14.173997750806514
+    }
+  ],
+  "hourly": [
+    {
+      "pickup_hour": 0,
+      "trips": 122232,
+      "mean_speed": 13.359407307796046,
+      "median_cost_per_mile": 9.823572660138586,
+      "mean_duration": 15.791859060366079
+    },
+    {
+      "pickup_hour": 1,
+      "trips": 81232,
+      "mean_speed": 13.565202368213034,
+      "median_cost_per_mile": 9.637606646548193,
+      "mean_duration": 14.665882082594708
+    },
+    {
+      "pickup_hour": 2,
+      "trips": 54503,
+      "mean_speed": 14.028459202555048,
+      "median_cost_per_mile": 9.19163763066202,
+      "mean_duration": 14.004195793503722
+    },
+    {
+      "pickup_hour": 3,
+      "trips": 38068,
+      "mean_speed": 15.08155552136506,
+      "median_cost_per_mile": 8.62895752895753,
+      "mean_duration": 14.152422857343002
+    },
+    {
+      "pickup_hour": 4,
+      "trips": 31331,
+      "mean_speed": 17.21407622377053,
+      "median_cost_per_mile": 7.71259842519685,
+      "mean_duration": 16.098774376815296
+    },
+    {
+      "pickup_hour": 5,
+      "trips": 35115,
+      "mean_speed": 18.24845177415038,
+      "median_cost_per_mile": 7.107250755287009,
+      "mean_duration": 19.79112582467132
+    },
+    {
+      "pickup_hour": 6,
+      "trips": 65702,
+      "mean_speed": 15.584311517388434,
+      "median_cost_per_mile": 7.894243421052631,
+      "mean_duration": 20.08028294420261
+    },
+    {
+      "pickup_hour": 7,
+      "trips": 120787,
+      "mean_speed": 12.288653277193465,
+      "median_cost_per_mile": 9.869565217391305,
+      "mean_duration": 19.26827045404997
+    },
+    {
+      "pickup_hour": 8,
+      "trips": 155699,
+      "mean_speed": 10.562075406474836,
+      "median_cost_per_mile": 11.416666666666666,
+      "mean_duration": 19.225371389668528
+    },
+    {
+      "pickup_hour": 9,
+      "trips": 166378,
+      "mean_speed": 10.21095734380073,
+      "median_cost_per_mile": 11.700000000000001,
+      "mean_duration": 18.861160329691025
+    },
+    {
+      "pickup_hour": 10,
+      "trips": 171973,
+      "mean_speed": 9.704455023643856,
+      "median_cost_per_mile": 12.190082644628099,
+      "mean_duration": 19.23083904643946
+    },
+    {
+      "pickup_hour": 11,
+      "trips": 186017,
+      "mean_speed": 9.243473130230472,
+      "median_cost_per_mile": 12.730061349693253,
+      "mean_duration": 20.15970063668016
+    },
+    {
+      "pickup_hour": 12,
+      "trips": 201160,
+      "mean_speed": 8.93370099298043,
+      "median_cost_per_mile": 12.957965253239106,
+      "mean_duration": 20.277391877112745
+    },
+    {
+      "pickup_hour": 13,
+      "trips": 207204,
+      "mean_speed": 8.915755576338325,
+      "median_cost_per_mile": 12.857142857142858,
+      "mean_duration": 20.964045658706716
+    },
+    {
+      "pickup_hour": 14,
+      "trips": 229710,
+      "mean_speed": 8.702423315370584,
+      "median_cost_per_mile": 12.842105263157894,
+      "mean_duration": 22.058014743226966
+    },
+    {
+      "pickup_hour": 15,
+      "trips": 237524,
+      "mean_speed": 8.35529150381652,
+      "median_cost_per_mile": 13.1,
+      "mean_duration": 22.637549538853616
+    },
+    {
+      "pickup_hour": 16,
+      "trips": 224298,
+      "mean_speed": 8.473423320868475,
+      "median_cost_per_mile": 13.88095238095238,
+      "mean_duration": 21.99241024589311
+    },
+    {
+      "pickup_hour": 17,
+      "trips": 247334,
+      "mean_speed": 8.530516500135981,
+      "median_cost_per_mile": 14.137021069466659,
+      "mean_duration": 19.94895761736491
+    },
+    {
+      "pickup_hour": 18,
+      "trips": 253371,
+      "mean_speed": 8.984154503916084,
+      "median_cost_per_mile": 13.992537313432836,
+      "mean_duration": 17.69972661959472
+    },
+    {
+      "pickup_hour": 19,
+      "trips": 222786,
+      "mean_speed": 9.95984589529585,
+      "median_cost_per_mile": 13.30705207901644,
+      "mean_duration": 16.833906080274346
+    },
+    {
+      "pickup_hour": 20,
+      "trips": 214234,
+      "mean_speed": 11.055966962239921,
+      "median_cost_per_mile": 11.617647058823529,
+      "mean_duration": 16.466332063693592
+    },
+    {
+      "pickup_hour": 21,
+      "trips": 233156,
+      "mean_speed": 11.452614081552534,
+      "median_cost_per_mile": 11.267641200739792,
+      "mean_duration": 16.316542929769483
+    },
+    {
+      "pickup_hour": 22,
+      "trips": 221894,
+      "mean_speed": 11.827664955325814,
+      "median_cost_per_mile": 10.815789473684212,
+      "mean_duration": 16.644524637890164
+    },
+    {
+      "pickup_hour": 23,
+      "trips": 177808,
+      "mean_speed": 12.73362836989734,
+      "median_cost_per_mile": 10.132575876463388,
+      "mean_duration": 16.689577146885032
+    }
+  ],
+  "unrecorded_group": {
+    "recorded": {
+      "unrecorded": false,
+      "trips": 3135465,
+      "mean_total": 29.798181921979676,
+      "median_distance": 1.7,
+      "mean_tip": 3.736910528422419,
+      "tip_rate": 0.7844345256604682
+    },
+    "unrecorded": {
+      "unrecorded": true,
+      "trips": 955371,
+      "mean_total": 32.73970525586395,
+      "median_distance": 2.63,
+      "mean_tip": 0.481879165266687,
+      "tip_rate": 0.09275558918995866
+    }
+  }
+}

@@ -1,0 +1,5 @@
+test,question,statistic,p_value,effect_or_difference,sample_size,interpretation,weekday_mean,weekend_mean
+Pearson correlation,trip_distance와 fare_amount의 선형 관계,0.8712091694541356,0.0,0.8712091694541356,200000,거리와 운임은 강한 양의 선형 관계를 보인다.,,
+Spearman correlation,trip_distance와 fare_amount의 단조 관계,0.870105284553352,0.0,0.870105284553352,200000,거리와 운임은 강한 양의 단조 관계를 보인다.,,
+Welch t-test,주중과 주말의 평균 total_amount 차이,17.557721672982844,6.253582170276578e-69,-1.7877266124399611,200000,유의수준 0.05에서 귀무가설을 기각한다. 주말 평균 total_amount가 주중보다 낮다.,31.06447096406328,29.276744351623318
+Chi-square independence,payment_type과 20% 이상 팁 여부의 연관성,83098.67269331586,0.0,0.6445877469100536,200000,결제유형과 20% 이상 팁 여부는 통계적으로 연관되어 있다.,,

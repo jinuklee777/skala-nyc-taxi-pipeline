@@ -1,0 +1,74 @@
+{
+  "test_rows": 30000,
+  "r2_recomputed": 0.9156649537273547,
+  "r2_stored": 0.9156649537273547,
+  "n_repeats": 5,
+  "scoring": "neg_mean_absolute_error",
+  "ranking": [
+    {
+      "feature": "trip_distance",
+      "mae_increase": 7.8239801176867285,
+      "std": 0.02236816730369251
+    },
+    {
+      "feature": "trip_duration_minutes",
+      "mae_increase": 5.968606372905764,
+      "std": 0.01793788579064587
+    },
+    {
+      "feature": "RatecodeID",
+      "mae_increase": 2.7831066972999756,
+      "std": 0.016567181878013777
+    },
+    {
+      "feature": "payment_type",
+      "mae_increase": 1.1205926746353119,
+      "std": 0.012392569238939692
+    },
+    {
+      "feature": "is_airport_trip",
+      "mae_increase": 0.2995633947931614,
+      "std": 0.00271164072018867
+    },
+    {
+      "feature": "pickup_hour",
+      "mae_increase": 0.17919130651460327,
+      "std": 0.001319130684568134
+    },
+    {
+      "feature": "VendorID",
+      "mae_increase": 0.1773642757839177,
+      "std": 0.0027018268516625444
+    },
+    {
+      "feature": "pickup_day_of_week",
+      "mae_increase": 0.170223235944637,
+      "std": 0.00507399290347324
+    },
+    {
+      "feature": "average_speed_mph",
+      "mae_increase": 0.025141624027701325,
+      "std": 0.004980728708477966
+    },
+    {
+      "feature": "time_of_day",
+      "mae_increase": 0.023226119185388416,
+      "std": 0.0008195417249073737
+    },
+    {
+      "feature": "passenger_count",
+      "mae_increase": 0.0007616968450431472,
+      "std": 0.00019431503201689456
+    },
+    {
+      "feature": "is_weekend",
+      "mae_increase": 0.0003329850251423849,
+      "std": 5.532650169932305e-05
+    },
+    {
+      "feature": "store_and_fwd_flag",
+      "mae_increase": -0.0052018556358077285,
+      "std": 0.0004884197234992431
+    }
+  ]
+}

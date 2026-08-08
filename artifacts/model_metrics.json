@@ -1,0 +1,40 @@
+{
+  "target": "total_amount",
+  "sample_rows": 150000,
+  "train_rows": 120000,
+  "test_rows": 30000,
+  "split_strategy": "pickup_datetime 기준 정렬 후 앞 80% 학습 / 뒤 20% 평가",
+  "features": [
+    "trip_distance",
+    "trip_duration_minutes",
+    "passenger_count",
+    "pickup_hour",
+    "pickup_day_of_week",
+    "is_weekend",
+    "average_speed_mph",
+    "is_airport_trip",
+    "VendorID",
+    "RatecodeID",
+    "payment_type",
+    "store_and_fwd_flag",
+    "time_of_day"
+  ],
+  "excluded_leakage_features": [
+    "fare_amount",
+    "tip_amount",
+    "tolls_amount",
+    "extra",
+    "mta_tax",
+    "improvement_surcharge",
+    "congestion_surcharge",
+    "Airport_fee",
+    "cbd_congestion_fee"
+  ],
+  "mae": 3.2380810845490204,
+  "rmse": 6.085098454131208,
+  "r2": 0.9156649537273547,
+  "baseline_median_mae": 12.864304,
+  "fit_seconds": 6.009549250011332,
+  "mae_improvement_vs_baseline_pct": 74.82894461644392,
+  "model_path": "/Users/jinuklee/Downloads/data_analysis/artifacts/total_amount_model.joblib"
+}
