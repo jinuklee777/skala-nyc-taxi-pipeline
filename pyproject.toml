@@ -1,0 +1,25 @@
+[project]
+name = "nyc-yellow-taxi-analysis"
+version = "1.0.0"
+description = "End-to-end analysis pipeline for NYC Yellow Taxi Trip Data (2026-05)"
+requires-python = ">=3.11,<3.14"
+dependencies = [
+  "jinja2>=3.1",
+  "joblib>=1.5",
+  "matplotlib>=3.10",
+  "numpy>=2.2",
+  "pandas>=2.2",
+  "plotly>=6.0",
+  "polars>=1.30",
+  "pyarrow>=20.0",
+  "scikit-learn>=1.7",
+  "scipy>=1.15",
+  "seaborn>=0.13",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]

@@ -1,0 +1,17 @@
+.venv/
+.uv-cache/
+__pycache__/
+.pytest_cache/
+.matplotlib-cache/
+*.py[cod]
+.DS_Store
+
+# 편집기·도구 설정
+.idea/
+.vscode/
+.claude/
+
+# 원본/중간 데이터와 재생성 가능한 산출물
+data/raw/*.parquet
+data/processed/*.parquet
+artifacts/*.joblib
