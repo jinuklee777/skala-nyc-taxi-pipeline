@@ -86,6 +86,41 @@ def hourly_profile(lazy: pl.LazyFrame) -> list[dict]:
     )
 
 
+def standard_ratecode_gap(lazy: pl.LazyFrame) -> dict:
+    """요금제 혼입을 통제하고 주말 격차를 다시 본다.
+
+    Flex Fare는 미터를 쓰지 않는 사전 확정 요금이라 요금 산정 방식 자체가 다르다.
+    표준 미터 요금(RatecodeID=1)만 남겨도 같은 방향의 격차가 남는지 확인한다.
+    """
+    result = (
+        lazy.filter(pl.col("RatecodeID") == 1)
+        .group_by("is_weekend")
+        .agg(
+            pl.len().alias("trips"),
+            pl.col("total_amount").mean().alias("mean_total"),
+            pl.col("trip_distance").mean().alias("mean_distance"),
+            pl.col("cost_per_mile").median().alias("median_cost_per_mile"),
+            pl.col("average_speed_mph").mean().alias("mean_speed"),
+        )
+        .sort("is_weekend")
+        .collect()
+    )
+    rows = {int(r["is_weekend"]): r for r in result.to_dicts()}
+    weekday, weekend = rows[0], rows[1]
+
+    def pct(key: str) -> float:
+        return (weekend[key] - weekday[key]) / weekday[key] * 100
+
+    return {
+        "weekday": weekday,
+        "weekend": weekend,
+        "total_gap": weekend["mean_total"] - weekday["mean_total"],
+        "distance_gap_pct": pct("mean_distance"),
+        "cost_per_mile_gap_pct": pct("median_cost_per_mile"),
+        "speed_gap_pct": pct("mean_speed"),
+    }
+
+
 def unrecorded_group(raw: pl.LazyFrame) -> dict:
     """payment_type=0(결제 미기록) 집단이 나머지와 다른지 원본에서 비교한다."""
     result = (
@@ -111,6 +146,7 @@ def main() -> None:
 
     analysis = {
         "weekend_gap": weekend_gap(lazy),
+        "standard_ratecode_gap": standard_ratecode_gap(lazy),
         "distance_bands": distance_band_profile(lazy),
         "hourly": hourly_profile(lazy),
         "unrecorded_group": unrecorded_group(raw),
@@ -130,6 +166,18 @@ def main() -> None:
     print(f"  공항   주중 {g['weekday']['airport_share']*100:.2f}% → 주말 {g['weekend']['airport_share']*100:.2f}%")
     print(f"  속도   주중 {g['weekday']['mean_speed']:.2f} → 주말 {g['weekend']['mean_speed']:.2f} mph")
     print(f"  팁률   주중 {g['weekday']['mean_tip_pct']:.2f}% → 주말 {g['weekend']['mean_tip_pct']:.2f}%")
+
+    s = analysis["standard_ratecode_gap"]
+    print("\n=== 표준 미터 요금(RatecodeID=1)만 — 요금제 통제 ===")
+    print(f"  건수   주중 {s['weekday']['trips']:,} / 주말 {s['weekend']['trips']:,}")
+    print(f"  총액   주중 ${s['weekday']['mean_total']:.2f} → 주말 ${s['weekend']['mean_total']:.2f}"
+          f"  (차이 ${s['total_gap']:+.2f})")
+    print(f"  거리   주중 {s['weekday']['mean_distance']:.2f} → 주말 {s['weekend']['mean_distance']:.2f} mi"
+          f"  ({s['distance_gap_pct']:+.1f}%)")
+    print(f"  마일당 주중 ${s['weekday']['median_cost_per_mile']:.2f} → 주말 ${s['weekend']['median_cost_per_mile']:.2f}"
+          f"  ({s['cost_per_mile_gap_pct']:+.1f}%)")
+    print(f"  속도   주중 {s['weekday']['mean_speed']:.2f} → 주말 {s['weekend']['mean_speed']:.2f} mph"
+          f"  ({s['speed_gap_pct']:+.1f}%)")
 
     print("\n=== 거리 구간별 ===")
     for b in analysis["distance_bands"]:
