@@ -1,0 +1,187 @@
+# NYC Yellow Taxi Trip Data (2026-05) 분석 보고서
+
+- 생성 시각: {{ generated_at }}
+- 원본 데이터: {{ data_url }}
+- 분석 범위: NYC Yellow Taxi, 2026년 5월
+- 파이프라인: 데이터 로드 → Pandas/Polars EDA → 원본 통계 분석 → 근거 기반 전처리 → Feature Engineering → 시각화 → 정제 후 통계 분석 → 머신러닝 → 모델 저장 → 보고서 생성
+
+## 1. Executive Summary
+
+원본은 **{{ eda.row_count | number }}행 × {{ eda.column_count }}열**이다. 완전 중복은 **{{ eda.duplicate_rows | number }}건**이었으며, Pandas 기술통계·Polars EDA·원본 통계검정을 먼저 수행한 뒤 그 결과로 전처리 규칙을 선택했다. 정제 후에는 **{{ cleaning.after_rows | number }}행**이 남아 원본의 **{{ cleaning.removed_rate_pct | number(2) }}%**가 제거됐다.
+
+Pandas에서 `passenger_count`, `RatecodeID`, `store_and_fwd_flag`, `congestion_surcharge`, `Airport_fee`의 결측률이 각각 **{{ benchmark.pandas_analysis.missing.passenger_count.rate_pct | number(4) }}%**로 관찰됐다. 다섯 컬럼이 동시에 결측인 **{{ benchmark.pandas_analysis.missing_pattern.all_five_missing_count | number }}건**은 모두 `payment_type=0`이며 그 역도 성립해 무작위 결측보다 구조적 미기록 패턴으로 판단했다. 승객 수는 이상치에 강건한 관찰 중앙값 **{{ preprocessing_plan.imputation.passenger_count.value }}**로 대체하고, 코드형 변수는 명시적 `Unknown`, 가산 요금은 중립값 0으로 처리했다.
+
+원본 통계검정과 분포에서 확인한 관계 및 극단값을 전처리·Feature Engineering 근거로 사용했다. 이후 같은 통계검정을 정제 데이터에 다시 적용해 전처리 전후 관계가 어떻게 달라졌는지 비교했다.
+
+ML 모델은 요금 구성요소를 Feature에서 제외해 target leakage를 방지한 상태에서 `total_amount`를 예측했다. 시간 순서 holdout 기준 MAE는 **${{ model.mae | number(2) }}**, R²는 **{{ model.r2 | number(3) }}**이며, 단순 중앙값 기준선보다 MAE가 **{{ model.mae_improvement_vs_baseline_pct | number(1) }}%** 개선됐다.
+
+## 2. 데이터 로드 및 Pandas·Polars 비교
+
+두 엔진 모두 동일한 Parquet 전체 파일을 사용했다. Polars는 `scan_parquet()` Lazy API 생성 시간과 `collect()` 구체화 시간을 구분했다. 메모리는 각 DataFrame 자체 크기, 처리 속도는 같은 `payment_type`별 건수·평균 총액 집계로 비교했다.
+
+| Engine | Lazy scan setup (s) | Load/materialize (s) | DataFrame memory (MB) | GroupBy (s) |
+|---|---:|---:|---:|---:|
+{% for row in benchmark.rows -%}
+| {{ row.engine }} | {{ row.lazy_scan_setup_seconds | default(0, true) | number(4) }} | {{ row.load_seconds | number(4) }} | {{ row.dataframe_memory_mb | number(2) }} | {{ row.groupby_seconds | number(4) }} |
+{% endfor %}
+
+- Polars 로딩 속도 배수(Pandas/Polars): **{{ benchmark.load_speedup_polars_vs_pandas | number(2) }}×**
+- Polars GroupBy 속도 배수(Pandas/Polars): **{{ benchmark.groupby_speedup_polars_vs_pandas | number(2) }}×**
+- DataFrame 메모리 비율(Pandas/Polars): **{{ benchmark.memory_ratio_pandas_to_polars | number(2) }}×**
+- Pandas의 `shape`, `columns`, `info()`, `describe()`, dtype, 결측 수/비율, 중복 수, 메모리 상세는 [`../artifacts/pandas_data_inspection.txt`](../artifacts/pandas_data_inspection.txt)에 저장했다.
+
+> 실행 시간은 하드웨어·OS 캐시·실행 순서의 영향을 받으므로 같은 환경에서 여러 번 반복 측정할 때 더 안정적이다.
+
+### Pandas 분석 결과
+
+아래 값은 전처리 전에 Pandas가 원본 전체 데이터에서 계산한 결과다. 이 표의 중앙값과 결측률은 결측 대체 분기에, p99와 최댓값의 차이는 이상치 처리 필요성을 판단하는 교차 근거로 사용했다.
+
+| Variable | Mean | Std | Q1 | Median | Q3 | P99 | Max |
+|---|---:|---:|---:|---:|---:|---:|---:|
+{% for column, values in benchmark.pandas_analysis.numeric_summary.items() -%}
+| `{{ column }}` | {{ values.mean | number(2) }} | {{ values.std | number(2) }} | {{ values["25%"] | number(2) }} | {{ values["50%"] | number(2) }} | {{ values["75%"] | number(2) }} | {{ values["99%"] | number(2) }} | {{ values.max | number(2) }} |
+{% endfor %}
+
+Pandas 원본 상관계수는 `trip_distance–fare_amount` **{{ benchmark.pandas_analysis.correlations.fare_amount.trip_distance | number(4) }}**, `trip_distance–total_amount` **{{ benchmark.pandas_analysis.correlations.total_amount.trip_distance | number(4) }}**였다. 전체 행 기준 계산은 극단값의 영향을 크게 받을 수 있으므로 순위 기반 Spearman 검정과 함께 해석했다.
+
+## 3. Polars Lazy EDA 결과
+
+### 결측치
+
+| Column | Missing count | Missing rate |
+|---|---:|---:|
+{% for column, values in eda.missing.items() if values.count > 0 -%}
+| `{{ column }}` | {{ values.count | number }} | {{ values.rate_pct | number(4) }}% |
+{% endfor %}
+
+### 수치형 분포와 이상치
+
+| Variable | Min | Q1 | Median | Q3 | P99 | Max |
+|---|---:|---:|---:|---:|---:|---:|
+{% for column, values in eda.numeric_summary.items() -%}
+| `{{ column }}` | {{ values.min | number(2) }} | {{ values.q1 | number(2) }} | {{ values.median | number(2) }} | {{ values.q3 | number(2) }} | {{ values.p99 | number(2) }} | {{ values.max | number(2) }} |
+{% endfor %}
+
+IQR만으로 상단 꼬리를 일괄 제거하면 정상적인 공항·장거리 운행도 함께 제거할 수 있다. 따라서 p99와 최댓값의 격차가 10배 이상인지 먼저 판단하고, 그때만 보수적인 택시 도메인 상한을 활성화했다.
+
+### 범주형 분포
+
+`VendorID=2`가 가장 많고, `payment_type=1`이 주된 결제 유형이다. 범주별 전체 건수는 [`../artifacts/eda_profile.json`](../artifacts/eda_profile.json)에 저장했다.
+
+### 데이터 품질 문제
+
+| Check | Count |
+|---|---:|
+{% for name, count in eda.quality_counts.items() -%}
+| `{{ name }}` | {{ count | number }} |
+{% endfor %}
+
+픽업 날짜 범위는 {{ eda.date_range.pickup_min }}부터 {{ eda.date_range.pickup_max }}까지로, 분석 월 밖 레코드가 포함돼 있었다.
+
+## 4. 분석 결과에 따른 전처리 분기와 근거
+
+`DataPreprocessor`는 Pandas 결측률·중앙값·상관계수, Polars EDA의 p99·최댓값·품질 위반 건수, 원본 통계검정의 Pearson·Spearman·Welch t-test 결과를 입력받아 아래 계획을 만들었다. 즉, 고정된 설명을 붙인 것이 아니라 현재 데이터에서 관찰된 값으로 조건을 평가한 결과다.
+
+| 단계 | 실제 관찰 | 선택한 처리 | 선택 이유 |
+|---|---|---|---|
+{% for decision in preprocessing_plan.decisions -%}
+| {{ decision.stage }} | {{ decision.observation }} | {{ decision.action }} | {{ decision.reason }} |
+{% endfor %}
+
+### 이번 실행에서 선택된 규칙
+
+| 항목 | 실행값 |
+|---|---|
+| 대상 월 필터 | {{ "적용" if preprocessing_plan.rules.filter_target_month else "미적용" }} |
+| 운임 범위 | `0 <= fare_amount <= {{ preprocessing_plan.rules.fare_cap | number(2) }}` |
+| 총액 범위 | `0 <= total_amount <= {{ preprocessing_plan.rules.total_cap | number(2) }}` |
+| 거리 범위 | `0 < trip_distance <= {{ preprocessing_plan.rules.distance_cap | number(2) }}` |
+| 운행시간 범위 | `0 < trip_duration_minutes <= {{ preprocessing_plan.rules.duration_cap_minutes | number(2) }}` |
+| 평균속도 상한 | `{{ preprocessing_plan.rules.speed_cap_mph | number(2) }} mph` |
+| 승객 수 | 결측을 `{{ preprocessing_plan.imputation.passenger_count.value }}`로 대체, `{{ preprocessing_plan.rules.passenger_min }}–{{ preprocessing_plan.rules.passenger_max }}`명 유지 |
+| RatecodeID 결측 | `{{ preprocessing_plan.imputation.RatecodeID.strategy }}` 전략, 값 `{{ preprocessing_plan.imputation.RatecodeID.value }}` |
+| store_and_fwd_flag 결측 | `{{ preprocessing_plan.imputation.store_and_fwd_flag.strategy }}` 전략, 값 `{{ preprocessing_plan.imputation.store_and_fwd_flag.value }}` |
+| congestion_surcharge 결측 | `{{ preprocessing_plan.imputation.congestion_surcharge.strategy }}` 전략, 값 `{{ preprocessing_plan.imputation.congestion_surcharge.value }}` |
+| Airport_fee 결측 | `{{ preprocessing_plan.imputation.Airport_fee.strategy }}` 전략, 값 `{{ preprocessing_plan.imputation.Airport_fee.value }}` |
+
+적용 순서는 완전 중복 제거 → 대상 월 필터 → 금액·거리·운행시간 규칙 → 속도·승객 수·Location ID 규칙 → 결측 대체 → Feature 생성이다. 생성 Feature는 `trip_duration_minutes`, `average_speed_mph`, `pickup_hour`, `pickup_day_of_week`, `pickup_date`, `is_weekend`, `time_of_day`, `tip_percentage`, `cost_per_mile`, `is_airport_trip`, `distance_band`다.
+
+정제 결과는 **{{ cleaning.after_rows | number }}행 × {{ cleaning.output_columns }}열**, 파일 크기는 **{{ cleaning.processed_size_mb | number(2) }}MB**다. 남은 결측 컬럼: {{ cleaning.remaining_nulls if cleaning.remaining_nulls else "없음" }}.
+
+![전처리 근거 및 전후 비교](../figures/preprocessing_evidence.png)
+
+위 그래프는 Pandas에서 관찰한 원본 결측률, 전처리 전후 행 수, 원본 p99 구간에서의 거리·총액 분포 변화를 함께 보여준다. 분포 그래프는 모양 비교를 위해 밀도로 정규화했으며, 전체 행 수 차이는 우측 상단 막대에서 별도로 표시했다.
+
+## 5. EDA 시각화
+
+![2×2 EDA dashboard](../figures/eda_overview_2x2.png)
+
+- Seaborn 2×2: 거리 분포, 결제 유형 분포, 시간대별 수요, 수치형 상관관계
+- Plotly 인터랙티브 차트: [`hourly_demand_interactive.html`](../figures/hourly_demand_interactive.html)
+
+## 6. 통계 분석: 전처리 전후 비교
+
+계산 비용과 극단적으로 작은 p-value의 과해석을 줄이기 위해 원본과 정제 데이터에서 각각 고정 seed로 **{{ raw_statistical_tests[0].sample_size | number }}건**을 추출했다. p-value만 보지 않고 상관계수·평균 차이·Cramér's V와 문장 해석을 함께 제시한다.
+
+### 6.1 원본 데이터 통계검정 — 전처리 근거
+
+| Test | Question | Statistic | p-value | Effect / difference | N | 해석 |
+|---|---|---:|---:|---:|---:|---|
+{% for test in raw_statistical_tests -%}
+| {{ test.test }} | {{ test.question }} | {{ test.statistic | number(4) }} | {{ test.p_value | pvalue }} | {{ test.effect_or_difference | number(4) }} | {{ test.sample_size | number }} | {{ test.interpretation }} |
+{% endfor %}
+
+### 6.2 정제 데이터 통계검정 — 처리 후 재확인
+
+| Test | Question | Statistic | p-value | Effect / difference | N | 해석 |
+|---|---|---:|---:|---:|---:|---|
+{% for test in statistical_tests -%}
+| {{ test.test }} | {{ test.question }} | {{ test.statistic | number(4) }} | {{ test.p_value | pvalue }} | {{ test.effect_or_difference | number(4) }} | {{ test.sample_size | number }} | {{ test.interpretation }} |
+{% endfor %}
+
+{% for test in raw_statistical_tests if test.test == "Welch t-test" -%}
+원본 Welch t-test에서 주중 평균은 **${{ test.weekday_mean | number(2) }}**, 주말 평균은 **${{ test.weekend_mean | number(2) }}**, p-value는 **{{ test.p_value | pvalue }}**였다. {{ test.interpretation }}
+{% endfor %}
+{% for test in statistical_tests if test.test == "Welch t-test" -%}
+정제 후에는 주중 평균 **${{ test.weekday_mean | number(2) }}**, 주말 평균 **${{ test.weekend_mean | number(2) }}**, p-value **{{ test.p_value | pvalue }}**로 관찰됐다. {{ test.interpretation }}
+{% endfor %}
+
+전처리 전후의 계수 차이는 전처리 효과를 의미하지만 인과효과는 아니다. 특히 표본 수가 크면 작은 차이도 유의해질 수 있으므로, 통계적 유의성과 효과 크기를 함께 해석해야 한다.
+
+## 7. 머신러닝 Pipeline
+
+- 목표: `total_amount` 회귀 예측
+- 모델: `HistGradientBoostingRegressor`
+- 전처리: 수치형 중앙값 대체 + 범주형 최빈값 대체/Ordinal Encoding
+- 분할: {{ model.split_strategy }}
+- 표본: {{ model.sample_rows | number }}행 (train {{ model.train_rows | number }}, test {{ model.test_rows | number }})
+- 누수 방지: `fare_amount`, `tip_amount`, 세금·할증·통행료 등 총액 구성요소는 Feature에서 제외
+
+| Metric | Value |
+|---|---:|
+| MAE | ${{ model.mae | number(3) }} |
+| RMSE | ${{ model.rmse | number(3) }} |
+| R² | {{ model.r2 | number(4) }} |
+| Median baseline MAE | ${{ model.baseline_median_mae | number(3) }} |
+| MAE improvement | {{ model.mae_improvement_vs_baseline_pct | number(2) }}% |
+| Fit time | {{ model.fit_seconds | number(2) }}s |
+
+모델은 `../artifacts/total_amount_model.joblib`에 전처리기와 함께 저장했다. 이는 분석용 baseline이며 실제 배포 전에는 비용 민감도, 시간대별 drift, 예측구간, 외부 월 데이터 검증이 추가로 필요하다.
+
+## 8. 재현 방법 및 산출물
+
+```bash
+cd data_analysis
+make setup
+make run
+make test
+```
+
+- Pandas 분석: `artifacts/pandas_analysis.json`, `artifacts/pandas_numeric_summary.csv`, `artifacts/pandas_correlation_matrix.csv`
+- 정제 데이터: `data/processed/yellow_taxi_2026-05_cleaned.parquet`
+- EDA 프로파일: `artifacts/eda_profile.json`
+- 전처리 결정: `artifacts/preprocessing_decisions.json`
+- 벤치마크: `artifacts/engine_benchmark.csv`
+- 원본/정제 통계 검정: `artifacts/raw_statistical_tests.csv`, `artifacts/statistical_tests.csv`
+- 모델/평가지표: `artifacts/total_amount_model.joblib`, `artifacts/model_metrics.json`
+- 시각화: `figures/eda_overview_2x2.png`, `figures/preprocessing_evidence.png`, `figures/hourly_demand_interactive.html`
