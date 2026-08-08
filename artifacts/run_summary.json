@@ -1,0 +1,12 @@
+{
+  "status": "success",
+  "pipeline_seconds": 18.828698583005462,
+  "report": "/Users/jinuklee/Downloads/data_analysis/reports/report.md",
+  "processed_data": "/Users/jinuklee/Downloads/data_analysis/data/processed/yellow_taxi_2026-05_cleaned.parquet",
+  "visualizations": {
+    "static_2x2": "/Users/jinuklee/Downloads/data_analysis/figures/eda_overview_2x2.png",
+    "interactive": "/Users/jinuklee/Downloads/data_analysis/figures/hourly_demand_interactive.html",
+    "preprocessing_evidence": "/Users/jinuklee/Downloads/data_analysis/figures/preprocessing_evidence.png"
+  },
+  "model": "/Users/jinuklee/Downloads/data_analysis/artifacts/total_amount_model.joblib"
+}

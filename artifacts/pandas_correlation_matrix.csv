@@ -1,0 +1,4 @@
+,trip_distance,fare_amount,total_amount
+trip_distance,1.0,0.007824,0.007346
+fare_amount,0.007824,1.0,0.963367
+total_amount,0.007346,0.963367,1.0

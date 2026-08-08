@@ -1,0 +1,264 @@
+{
+  "base_mae": 3.2380810845490204,
+  "grouped_importance": [
+    {
+      "group": "거리·시간·속도",
+      "columns": [
+        "trip_distance",
+        "trip_duration_minutes",
+        "average_speed_mph"
+      ],
+      "mae_increase": 14.323060821056032,
+      "std": 0.049003298964962055
+    },
+    {
+      "group": "RatecodeID",
+      "columns": [
+        "RatecodeID"
+      ],
+      "mae_increase": 2.7866516624838504,
+      "std": 0.022617327593686475
+    },
+    {
+      "group": "payment_type",
+      "columns": [
+        "payment_type"
+      ],
+      "mae_increase": 1.110730177336363,
+      "std": 0.020219060853931898
+    },
+    {
+      "group": "is_airport_trip",
+      "columns": [
+        "is_airport_trip"
+      ],
+      "mae_increase": 0.29484993805978155,
+      "std": 0.003123206819143165
+    },
+    {
+      "group": "시각·시간대구분",
+      "columns": [
+        "pickup_hour",
+        "time_of_day"
+      ],
+      "mae_increase": 0.2321949534113517,
+      "std": 0.005239556786444268
+    },
+    {
+      "group": "VendorID",
+      "columns": [
+        "VendorID"
+      ],
+      "mae_increase": 0.17961149356028566,
+      "std": 0.006844398794656411
+    },
+    {
+      "group": "요일·주말여부",
+      "columns": [
+        "pickup_day_of_week",
+        "is_weekend"
+      ],
+      "mae_increase": 0.17178852059499183,
+      "std": 0.00612617524261259
+    },
+    {
+      "group": "passenger_count",
+      "columns": [
+        "passenger_count"
+      ],
+      "mae_increase": 0.0005903939553054905,
+      "std": 0.0002134425901312388
+    },
+    {
+      "group": "store_and_fwd_flag",
+      "columns": [
+        "store_and_fwd_flag"
+      ],
+      "mae_increase": -0.005158693373471479,
+      "std": 0.0006266089628673516
+    }
+  ],
+  "weekend_within_distance_band": [
+    {
+      "distance_band": "long",
+      "is_weekend": 0,
+      "trips": 414596,
+      "mean_distance": 8.350167440110372,
+      "median_cost_per_mile": 6.422413793103448,
+      "mean_speed": 16.219660420871936,
+      "mean_total": 53.014223171472956
+    },
+    {
+      "distance_band": "long",
+      "is_weekend": 1,
+      "trips": 200222,
+      "mean_distance": 8.051060572764232,
+      "median_cost_per_mile": 6.077958532545269,
+      "mean_speed": 18.194786982300787,
+      "mean_total": 48.63440486060473
+    },
+    {
+      "distance_band": "medium",
+      "is_weekend": 0,
+      "trips": 746402,
+      "mean_distance": 3.039701943456743,
+      "median_cost_per_mile": 10.04040404040404,
+      "mean_speed": 9.776586163071821,
+      "mean_total": 31.008626129083254
+    },
+    {
+      "distance_band": "medium",
+      "is_weekend": 1,
+      "trips": 392242,
+      "mean_distance": 3.1173177018269334,
+      "median_cost_per_mile": 9.155555555555557,
+      "mean_speed": 10.795553415944712,
+      "mean_total": 28.639444322637555
+    },
+    {
+      "distance_band": "short",
+      "is_weekend": 0,
+      "trips": 1395826,
+      "mean_distance": 1.1158728093616253,
+      "median_cost_per_mile": 17.150943396226413,
+      "mean_speed": 7.335847723694438,
+      "mean_total": 19.794422872191806
+    },
+    {
+      "distance_band": "short",
+      "is_weekend": 1,
+      "trips": 596603,
+      "mean_distance": 1.1481976791937019,
+      "median_cost_per_mile": 15.174418604651164,
+      "mean_speed": 8.439503062896543,
+      "mean_total": 17.87746608716349
+    },
+    {
+      "distance_band": "very_long",
+      "is_weekend": 0,
+      "trips": 105851,
+      "mean_distance": 18.89605851621619,
+      "median_cost_per_mile": 5.1836945304437565,
+      "mean_speed": 21.19201050255688,
+      "mean_total": 95.8575205713692
+    },
+    {
+      "distance_band": "very_long",
+      "is_weekend": 1,
+      "trips": 47774,
+      "mean_distance": 18.94398982710261,
+      "median_cost_per_mile": 5.109830097087378,
+      "mean_speed": 23.816019001080697,
+      "mean_total": 96.01880081215725
+    }
+  ],
+  "by_payment_type": [
+    {
+      "payment_type": 0,
+      "trips": 7240,
+      "mean_tip": 0.39660497237569065,
+      "mae": 6.490976137569862,
+      "bias": 0.7191335495713523
+    },
+    {
+      "payment_type": 1,
+      "trips": 19930,
+      "mean_tip": 4.240107877571501,
+      "mae": 2.2328870176999214,
+      "bias": 0.013382823578169372
+    },
+    {
+      "payment_type": 2,
+      "trips": 2668,
+      "mean_tip": 0.0,
+      "mae": 1.9042660582910689,
+      "bias": 0.4119818047186558
+    },
+    {
+      "payment_type": 3,
+      "trips": 60,
+      "mean_tip": 0.0,
+      "mae": 4.209455945457082,
+      "bias": 1.3672868457282386
+    },
+    {
+      "payment_type": 4,
+      "trips": 102,
+      "mean_tip": 0.0,
+      "mae": 3.070370955464456,
+      "bias": -0.7955561427217287
+    }
+  ],
+  "by_amount_decile": [
+    {
+      "decile": 1,
+      "trips": 3012,
+      "mean_total": 12.051865869853918,
+      "mae": 2.1667932505839276,
+      "bias": 2.06671129999814
+    },
+    {
+      "decile": 2,
+      "trips": 2997,
+      "mean_total": 15.277587587587584,
+      "mae": 1.4132910164038033,
+      "bias": 0.9759621547880506
+    },
+    {
+      "decile": 3,
+      "trips": 3022,
+      "mean_total": 17.50585043017869,
+      "mae": 1.5076240965743668,
+      "bias": 0.8458745357694789
+    },
+    {
+      "decile": 4,
+      "trips": 2995,
+      "mean_total": 19.770337228714524,
+      "mae": 1.9464659215702824,
+      "bias": 1.0760004483361634
+    },
+    {
+      "decile": 5,
+      "trips": 2968,
+      "mean_total": 22.121960916442045,
+      "mae": 2.026872023274305,
+      "bias": 0.9215708628818285
+    },
+    {
+      "decile": 6,
+      "trips": 3046,
+      "mean_total": 25.134714379514115,
+      "mae": 2.2665456866627554,
+      "bias": 0.929853914345186
+    },
+    {
+      "decile": 7,
+      "trips": 2960,
+      "mean_total": 29.086216216216215,
+      "mae": 2.9490019534591836,
+      "bias": 0.8910054581523438
+    },
+    {
+      "decile": 8,
+      "trips": 3000,
+      "mean_total": 34.72263,
+      "mae": 3.496917905555839,
+      "bias": 0.36552893822764576
+    },
+    {
+      "decile": 9,
+      "trips": 3000,
+      "mean_total": 44.79411666666667,
+      "mae": 5.313888141384594,
+      "bias": -1.4333793321840402
+    },
+    {
+      "decile": 10,
+      "trips": 3000,
+      "mean_total": 81.55960333333333,
+      "mae": 9.304531461628503,
+      "bias": -4.452275003253953
+    }
+  ]
+}
