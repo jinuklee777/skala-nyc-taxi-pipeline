@@ -27,6 +27,28 @@
     "distance_gap_pct": 2.553541252197983,
     "airport_share_gap_pct": -0.49668203891998497
   },
+  "standard_ratecode_gap": {
+    "weekday": {
+      "is_weekend": 0,
+      "trips": 1933779,
+      "mean_total": 26.907983063214566,
+      "mean_distance": 2.563856841965912,
+      "median_cost_per_mile": 13.704545454545453,
+      "mean_speed": 9.145423851160185
+    },
+    "weekend": {
+      "is_weekend": 1,
+      "trips": 815545,
+      "mean_total": 25.18796246681667,
+      "mean_distance": 2.6546713056912865,
+      "median_cost_per_mile": 12.124999999999998,
+      "mean_speed": 10.387492124553255
+    },
+    "total_gap": -1.7200205963978945,
+    "distance_gap_pct": 3.542103530856265,
+    "cost_per_mile_gap_pct": -11.525704809286903,
+    "speed_gap_pct": 13.58130900882742
+  },
   "distance_bands": [
     {
       "distance_band": "short",
