@@ -6,6 +6,7 @@
       "mean_total": 31.134317909620965,
       "mean_distance": 3.4884154468720365,
       "median_cost_per_mile": 12.558823529411766,
+      "median_cost_per_mile_ex_tip": 11.107784431137725,
       "mean_duration": 19.53704405657218,
       "mean_speed": 9.954137206238318,
       "airport_share": 0.0708685814077948,
@@ -17,6 +18,7 @@
       "mean_total": 29.287695686025934,
       "mean_distance": 3.5774935743559606,
       "median_cost_per_mile": 10.907051282051283,
+      "median_cost_per_mile_ex_tip": 9.786821705426357,
       "mean_duration": 17.301305826698822,
       "mean_speed": 11.359815400474362,
       "airport_share": 0.06590176101859495,
@@ -25,7 +27,9 @@
     "total_gap": -1.8466222235950305,
     "distance_gap": 0.08907812748392407,
     "distance_gap_pct": 2.553541252197983,
-    "airport_share_gap_pct": -0.49668203891998497
+    "airport_share_gap_pct": -0.49668203891998497,
+    "cost_per_mile_gap_pct": -13.152284873596354,
+    "cost_per_mile_ex_tip_gap_pct": -11.892225077832801
   },
   "standard_ratecode_gap": {
     "weekday": {
