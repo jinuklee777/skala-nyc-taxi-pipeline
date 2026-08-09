@@ -28,6 +28,11 @@ def weekend_gap(lazy: pl.LazyFrame) -> dict:
             pl.col("total_amount").mean().alias("mean_total"),
             pl.col("trip_distance").mean().alias("mean_distance"),
             pl.col("cost_per_mile").median().alias("median_cost_per_mile"),
+            # cost_per_mile은 total_amount 기준이라 팁·통행료·할증이 섞여 있다.
+            # 주말은 팁 비율이 낮으므로 팁을 뺀 값으로도 격차가 남는지 확인한다.
+            ((pl.col("total_amount") - pl.col("tip_amount")) / pl.col("trip_distance"))
+            .median()
+            .alias("median_cost_per_mile_ex_tip"),
             pl.col("trip_duration_minutes").mean().alias("mean_duration"),
             pl.col("average_speed_mph").mean().alias("mean_speed"),
             pl.col("is_airport_trip").mean().alias("airport_share"),
@@ -49,6 +54,14 @@ def weekend_gap(lazy: pl.LazyFrame) -> dict:
         ),
         "airport_share_gap_pct": (
             (weekend["airport_share"] - weekday["airport_share"]) * 100
+        ),
+        "cost_per_mile_gap_pct": (
+            (weekend["median_cost_per_mile"] - weekday["median_cost_per_mile"])
+            / weekday["median_cost_per_mile"] * 100
+        ),
+        "cost_per_mile_ex_tip_gap_pct": (
+            (weekend["median_cost_per_mile_ex_tip"] - weekday["median_cost_per_mile_ex_tip"])
+            / weekday["median_cost_per_mile_ex_tip"] * 100
         ),
     }
 
@@ -162,7 +175,10 @@ def main() -> None:
           f"  (차이 ${g['total_gap']:+.2f})")
     print(f"  거리   주중 {g['weekday']['mean_distance']:.2f} → 주말 {g['weekend']['mean_distance']:.2f} mi"
           f"  ({g['distance_gap_pct']:+.1f}%)")
-    print(f"  마일당 주중 ${g['weekday']['median_cost_per_mile']:.2f} → 주말 ${g['weekend']['median_cost_per_mile']:.2f}")
+    print(f"  마일당 총액 주중 ${g['weekday']['median_cost_per_mile']:.2f} → 주말 ${g['weekend']['median_cost_per_mile']:.2f}"
+          f"  ({g['cost_per_mile_gap_pct']:+.1f}%)")
+    print(f"  팁 제외    주중 ${g['weekday']['median_cost_per_mile_ex_tip']:.2f} → 주말 ${g['weekend']['median_cost_per_mile_ex_tip']:.2f}"
+          f"  ({g['cost_per_mile_ex_tip_gap_pct']:+.1f}%)")
     print(f"  공항   주중 {g['weekday']['airport_share']*100:.2f}% → 주말 {g['weekend']['airport_share']*100:.2f}%")
     print(f"  속도   주중 {g['weekday']['mean_speed']:.2f} → 주말 {g['weekend']['mean_speed']:.2f} mph")
     print(f"  팁률   주중 {g['weekday']['mean_tip_pct']:.2f}% → 주말 {g['weekend']['mean_tip_pct']:.2f}%")
